@@ -52,7 +52,9 @@ class App extends React.Component {
         super();
         this.state = {
             searchText: "",
-            users: []
+            users: [],
+            error: '',
+            initialized: false
         };
     }
 
@@ -68,7 +70,8 @@ class App extends React.Component {
         const url = `https://api.github.com/search/users?q=${searchText}`;
         fetch(url)
             .then(response => response.json())
-            .then(responseJson => this.setState({ users: responseJson.items }))
+            .then(responseJson => this.setState({ users: responseJson.items, error: '', initialized: true }))
+            .catch(error => this.setState({ users: [], error: 'Nothing found... Try Again' }))
     };
 
     render() {
@@ -84,6 +87,8 @@ class App extends React.Component {
                         style={{ fontSize: "18px", marginLeft: "15px" }} />
                 </form>
                 <UsersList users={this.state.users} />
+                {this.state.error ? <p className="error-message">{this.state.error}</p> : null}
+                {/* {this.state.users && this.state.initialized ? <p className="error-message">nothing found...</p> : null} */}
             </div>
         )
     }

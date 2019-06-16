@@ -100,7 +100,9 @@ var App = function (_React$Component3) {
 
         _this3.state = {
             searchText: "",
-            users: []
+            users: [],
+            error: '',
+            initialized: false
         };
         return _this3;
     }
@@ -124,7 +126,9 @@ var App = function (_React$Component3) {
             fetch(url).then(function (response) {
                 return response.json();
             }).then(function (responseJson) {
-                return _this4.setState({ users: responseJson.items });
+                return _this4.setState({ users: responseJson.items, error: '', initialized: true });
+            }).catch(function (error) {
+                return _this4.setState({ users: [], error: 'Nothing found... Try Again' });
             });
         }
     }, {
@@ -154,7 +158,12 @@ var App = function (_React$Component3) {
                         value: this.state.searchText,
                         style: { fontSize: "18px", marginLeft: "15px" } })
                 ),
-                React.createElement(UsersList, { users: this.state.users })
+                React.createElement(UsersList, { users: this.state.users }),
+                this.state.error ? React.createElement(
+                    "p",
+                    { className: "error-message" },
+                    this.state.error
+                ) : null
             );
         }
     }]);
