@@ -21,6 +21,53 @@ const listOfUsers = {
 };
 
 /* GitHub Search Users App */
+class App extends React.Component {
+    constructor() {
+        super();
+        this.state = {
+            searchText: "",
+            users: [],
+            error: '',
+            initialized: false,
+        };
+    }
+
+    onChangeHandle(event) {
+        this.setState({
+            searchText: event.target.value
+        });
+    }
+
+    onSubmit(event) {
+        console.log('rendering...', this.state.users)
+        event.preventDefault();
+        const { searchText } = this.state;
+        const url = `https://api.github.com/search/users?q=${searchText}`;
+        fetch(url)
+            .then(response => response.json(), this.setState({ initialized: true }))
+            .then(responseJson => this.setState({ users: responseJson.items, error: '', initialized: true }))
+            .catch(error => this.setState({ error: 'ERROR Try again later...' }))
+    };
+
+    render() {
+        return (
+            <div>
+                <form onSubmit={event => this.onSubmit(event)} style={SubmitFormStyles}>
+                    <label htmlFor={this.state.searchText} style={{ fontSize: "20px", textTransform: "uppercase" }}>Search by user name:</label>
+                    <input
+                        type="text"
+                        id="searchText"
+                        onChange={event => this.onChangeHandle(event)}
+                        value={this.state.searchText}
+                        style={{ fontSize: "18px", marginLeft: "15px" }} />
+                </form>
+                <UsersList users={this.state.users} />
+                {this.state.error ? <p className="error-message">{this.state.error}</p> : null}
+                {!this.state.users && this.state.initialized ? <p className="error-message">We Can't found This User</p> : null}
+            </div>
+        )
+    }
+}
 
 class UsersList extends React.Component {
     get users() {
@@ -45,53 +92,6 @@ class User extends React.Component {
             </div>
         )
     };
-}
-
-class App extends React.Component {
-    constructor() {
-        super();
-        this.state = {
-            searchText: "",
-            users: [],
-            error: '',
-            initialized: false
-        };
-    }
-
-    onChangeHandle(event) {
-        this.setState({
-            searchText: event.target.value
-        });
-    }
-
-    onSubmit(event) {
-        event.preventDefault();
-        const { searchText } = this.state;
-        const url = `https://api.github.com/search/users?q=${searchText}`;
-        fetch(url)
-            .then(response => response.json())
-            .then(responseJson => this.setState({ users: responseJson.items, error: '', initialized: true }))
-            .catch(error => this.setState({ users: [], error: 'Nothing found... Try Again' }))
-    };
-
-    render() {
-        return (
-            <div>
-                <form onSubmit={event => this.onSubmit(event)} style={SubmitFormStyles}>
-                    <label htmlFor={this.state.searchText} style={{ fontSize: "20px", textTransform: "uppercase" }}>Search by user name:</label>
-                    <input
-                        type="text"
-                        id="searchText"
-                        onChange={event => this.onChangeHandle(event)}
-                        value={this.state.searchText}
-                        style={{ fontSize: "18px", marginLeft: "15px" }} />
-                </form>
-                <UsersList users={this.state.users} />
-                {this.state.error ? <p className="error-message">{this.state.error}</p> : null}
-                {/* {this.state.users && this.state.initialized ? <p className="error-message">nothing found...</p> : null} */}
-            </div>
-        )
-    }
 }
 
 ReactDOM.render(<App />, document.getElementById("root"));

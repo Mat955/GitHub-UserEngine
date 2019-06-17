@@ -32,8 +32,95 @@ var listOfUsers = {
 
 /* GitHub Search Users App */
 
-var UsersList = function (_React$Component) {
-    _inherits(UsersList, _React$Component);
+var App = function (_React$Component) {
+    _inherits(App, _React$Component);
+
+    function App() {
+        _classCallCheck(this, App);
+
+        var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this));
+
+        _this.state = {
+            searchText: "",
+            users: [],
+            error: '',
+            initialized: false
+        };
+        return _this;
+    }
+
+    _createClass(App, [{
+        key: "onChangeHandle",
+        value: function onChangeHandle(event) {
+            this.setState({
+                searchText: event.target.value
+            });
+        }
+    }, {
+        key: "onSubmit",
+        value: function onSubmit(event) {
+            var _this2 = this;
+
+            console.log('rendering...', this.state.users);
+            event.preventDefault();
+            var searchText = this.state.searchText;
+
+            var url = "https://api.github.com/search/users?q=" + searchText;
+            fetch(url).then(function (response) {
+                return response.json();
+            }, this.setState({ initialized: true })).then(function (responseJson) {
+                return _this2.setState({ users: responseJson.items, error: '', initialized: true });
+            }).catch(function (error) {
+                return _this2.setState({ error: 'ERROR Try again later...' });
+            });
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            var _this3 = this;
+
+            return React.createElement(
+                "div",
+                null,
+                React.createElement(
+                    "form",
+                    { onSubmit: function onSubmit(event) {
+                            return _this3.onSubmit(event);
+                        }, style: SubmitFormStyles },
+                    React.createElement(
+                        "label",
+                        { htmlFor: this.state.searchText, style: { fontSize: "20px", textTransform: "uppercase" } },
+                        "Search by user name:"
+                    ),
+                    React.createElement("input", {
+                        type: "text",
+                        id: "searchText",
+                        onChange: function onChange(event) {
+                            return _this3.onChangeHandle(event);
+                        },
+                        value: this.state.searchText,
+                        style: { fontSize: "18px", marginLeft: "15px" } })
+                ),
+                React.createElement(UsersList, { users: this.state.users }),
+                this.state.error ? React.createElement(
+                    "p",
+                    { className: "error-message" },
+                    this.state.error
+                ) : null,
+                !this.state.users && this.state.initialized ? React.createElement(
+                    "p",
+                    { className: "error-message" },
+                    "We Can't found This User"
+                ) : null
+            );
+        }
+    }]);
+
+    return App;
+}(React.Component);
+
+var UsersList = function (_React$Component2) {
+    _inherits(UsersList, _React$Component2);
 
     function UsersList() {
         _classCallCheck(this, UsersList);
@@ -62,8 +149,8 @@ var UsersList = function (_React$Component) {
     return UsersList;
 }(React.Component);
 
-var User = function (_React$Component2) {
-    _inherits(User, _React$Component2);
+var User = function (_React$Component3) {
+    _inherits(User, _React$Component3);
 
     function User() {
         _classCallCheck(this, User);
@@ -88,87 +175,6 @@ var User = function (_React$Component2) {
     }]);
 
     return User;
-}(React.Component);
-
-var App = function (_React$Component3) {
-    _inherits(App, _React$Component3);
-
-    function App() {
-        _classCallCheck(this, App);
-
-        var _this3 = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this));
-
-        _this3.state = {
-            searchText: "",
-            users: [],
-            error: '',
-            initialized: false
-        };
-        return _this3;
-    }
-
-    _createClass(App, [{
-        key: "onChangeHandle",
-        value: function onChangeHandle(event) {
-            this.setState({
-                searchText: event.target.value
-            });
-        }
-    }, {
-        key: "onSubmit",
-        value: function onSubmit(event) {
-            var _this4 = this;
-
-            event.preventDefault();
-            var searchText = this.state.searchText;
-
-            var url = "https://api.github.com/search/users?q=" + searchText;
-            fetch(url).then(function (response) {
-                return response.json();
-            }).then(function (responseJson) {
-                return _this4.setState({ users: responseJson.items, error: '', initialized: true });
-            }).catch(function (error) {
-                return _this4.setState({ users: [], error: 'Nothing found... Try Again' });
-            });
-        }
-    }, {
-        key: "render",
-        value: function render() {
-            var _this5 = this;
-
-            return React.createElement(
-                "div",
-                null,
-                React.createElement(
-                    "form",
-                    { onSubmit: function onSubmit(event) {
-                            return _this5.onSubmit(event);
-                        }, style: SubmitFormStyles },
-                    React.createElement(
-                        "label",
-                        { htmlFor: this.state.searchText, style: { fontSize: "20px", textTransform: "uppercase" } },
-                        "Search by user name:"
-                    ),
-                    React.createElement("input", {
-                        type: "text",
-                        id: "searchText",
-                        onChange: function onChange(event) {
-                            return _this5.onChangeHandle(event);
-                        },
-                        value: this.state.searchText,
-                        style: { fontSize: "18px", marginLeft: "15px" } })
-                ),
-                React.createElement(UsersList, { users: this.state.users }),
-                this.state.error ? React.createElement(
-                    "p",
-                    { className: "error-message" },
-                    this.state.error
-                ) : null
-            );
-        }
-    }]);
-
-    return App;
 }(React.Component);
 
 ReactDOM.render(React.createElement(App, null), document.getElementById("root"));
