@@ -61,17 +61,17 @@ var App = function (_React$Component) {
         value: function onSubmit(event) {
             var _this2 = this;
 
-            console.log('rendering...', this.state.users);
+            console.log('rendering...', this.state);
             event.preventDefault();
             var searchText = this.state.searchText;
 
             var url = "https://api.github.com/search/users?q=" + searchText;
             fetch(url).then(function (response) {
                 return response.json();
-            }, this.setState({ initialized: true })).then(function (responseJson) {
+            }).then(function (responseJson) {
                 return _this2.setState({ users: responseJson.items, error: '', initialized: true });
             }).catch(function (error) {
-                return _this2.setState({ error: 'ERROR Try again later...' });
+                return _this2.setState({ users: [], error: 'ERROR Try again later...', initialized: false });
             });
         }
     }, {
@@ -107,10 +107,10 @@ var App = function (_React$Component) {
                     { className: "error-message" },
                     this.state.error
                 ) : null,
-                !this.state.users && this.state.initialized ? React.createElement(
+                !this.state.users.length && this.state.initialized ? React.createElement(
                     "p",
                     { className: "error-message" },
-                    "We Can't found This User"
+                    "We Can't Find This User"
                 ) : null
             );
         }

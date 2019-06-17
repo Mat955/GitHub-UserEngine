@@ -39,14 +39,14 @@ class App extends React.Component {
     }
 
     onSubmit(event) {
-        console.log('rendering...', this.state.users.items)
+        console.log('rendering...', this.state)
         event.preventDefault();
         const { searchText } = this.state;
         const url = `https://api.github.com/search/users?q=${searchText}`;
         fetch(url)
             .then(response => response.json())
             .then(responseJson => this.setState({ users: responseJson.items, error: '', initialized: true }))
-            .catch(error => this.setState({ error: 'ERROR Try again later...' }))
+            .catch(error => this.setState({ users: [], error: 'ERROR Try again later...', initialized: false }))
     };
 
     render() {
@@ -63,7 +63,7 @@ class App extends React.Component {
                 </form>
                 <UsersList users={this.state.users} />
                 {this.state.error ? <p className="error-message">{this.state.error}</p> : null}
-                {!this.state.users.items && this.state.initialized ? <p className="error-message">We Can't found This User</p> : null}
+                {!this.state.users.length && this.state.initialized ? <p className="error-message">We Can't Find This User</p> : null}
             </div>
         )
     }
